@@ -30,6 +30,17 @@ class _GuestBookState extends State<GuestBook> {
   @override
   Widget build(BuildContext context) {
     return Column(
+      itemCount: messages.length,
+    itemBuilder: (context, index) {
+      final message = messages[index];
+      return Container( // Yeni eklendi
+        color: message.attend ? Colors.blue : Colors.red, // Yeni eklendi
+        child: ListTile(
+          title: Text(message.name),
+          subtitle: Text(message.message),
+        ),
+      ); // Yeni eklendi
+    },
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
