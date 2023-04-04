@@ -1,9 +1,4 @@
-// Copyright 2022 The Flutter Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
-
-import 'package:firebase_auth/firebase_auth.dart'
-    hide EmailAuthProvider, PhoneAuthProvider;
+import 'package:firebase_auth/firebase_auth.dart' hide EmailAuthProvider, PhoneAuthProvider;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -12,9 +7,23 @@ import 'guest_book.dart';
 import 'src/authentication.dart';
 import 'src/widgets.dart';
 import 'yes_no_selection.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
+void addAttendFieldToGuestbook() async {
+  // Access the guestbook collection
+  final guestbookRef = FirebaseFirestore.instance.collection('guestbook');
+
+  // Get all documents from the guestbook collection
+  final snapshot = await guestbookRef.get();
+
+  // Loop through each document and update with new field
+  snapshot.docs.forEach((doc) async {
+    await guestbookRef.doc(doc.id).update({'attend': false});
+  });
+}
 
 class HomePage extends StatelessWidget {
-  const HomePage({super.key});
+  const HomePage({Key? key});
 
   @override
   Widget build(BuildContext context) {
@@ -24,11 +33,13 @@ class HomePage extends StatelessWidget {
       ),
       body: ListView(
         children: <Widget>[
-          Image.asset('assets/codelab.png'),
+          Image.asset('assets/yeni-kampus-gisi.jpg'), // Yeni resim eklendi
           const SizedBox(height: 8),
           Consumer<ApplicationState>(
-            builder: (context, appState, _) =>
-                IconAndDetail(Icons.calendar_today, appState.eventDate),
+            builder: (context, appState, _) => IconAndDetail(
+              Icons.calendar_today,
+              appState.eventDate,
+            ),
           ),
           const IconAndDetail(Icons.location_city, 'İstanbul'),
           Consumer<ApplicationState>(
@@ -49,9 +60,8 @@ class HomePage extends StatelessWidget {
           ),
           const Header("What we'll be doing"),
           Consumer<ApplicationState>(
-            builder: (context, appState, _) => Paragraph(
-              appState.callToAction,
-            ),
+            builder: (context, appState, _) =>
+                Paragraph(appState.callToAction),
           ),
           Consumer<ApplicationState>(
             builder: (context, appState, _) => Column(
@@ -66,7 +76,8 @@ class HomePage extends StatelessWidget {
                 if (appState.loggedIn) ...[
                   YesNoSelection(
                     state: appState.attending,
-                    onSelection: (attending) => appState.attending = attending,
+                    onSelection: (attending) =>
+                        appState.attending = attending,
                   ),
                   const Header('Discussion'),
                   GuestBook(
