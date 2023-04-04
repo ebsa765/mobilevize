@@ -41,7 +41,7 @@ class HomePage extends StatelessWidget {
               appState.eventDate,
             ),
           ),
-          const IconAndDetail(Icons.location_city, 'San Francisco'),
+          const IconAndDetail(Icons.location_city, 'İstanbul'),
           Consumer<ApplicationState>(
             builder: (context, appState, _) => AuthFunc(
               loggedIn: appState.loggedIn,
